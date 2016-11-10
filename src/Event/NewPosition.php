@@ -34,7 +34,7 @@ class NewPosition extends AbstractEvent
         ];
 
         if ($this->previousPersonName !== null) {
-            $result['previous_person'] = $this->previousPersonName;
+            $result['previousPerson'] = $this->previousPersonName;
         }
 
         return $result;

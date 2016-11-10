@@ -3,8 +3,6 @@
 namespace TestCode;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use EventStore\EventStore;
-use EventStore\Http\GuzzleHttpClient;
 use TestCode\Event as Event;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -46,5 +44,35 @@ $scenario2 = [
 $company1 = new CompanyHistory('Brilliant Future B.V.', $scenario1);
 $company2 = new CompanyHistory('FuzzyLogic B.V.', $scenario2);
 
-file_put_contents('company1.json', json_encode($company1->getEvents()->toStreamData(), JSON_PRETTY_PRINT));
-file_put_contents('company2.json', json_encode($company2->getEvents()->toStreamData(), JSON_PRETTY_PRINT));
+//file_put_contents('company1.json', json_encode($company1->getEvents()->toStreamData(), JSON_PRETTY_PRINT));
+//file_put_contents('company2.json', json_encode($company2->getEvents()->toStreamData(), JSON_PRETTY_PRINT));
+
+$scenarios = [$scenario1, $scenario2];
+
+foreach ($scenarios as $index => $scenario) {
+    $out = [];
+    /** @var Event\AbstractEvent $event */
+    foreach ($scenario as $event) {
+        $array = $event->toStreamData();
+        $pcs = [
+            "badgeClass: 'info'",
+            "badgeIconClass: 'glyphicon-check'",
+            sprintf("eventId: '%s'", $array['eventId']),
+            sprintf("title: '%s'", $array['eventType']),
+            sprintf("when: '%s'", $array['date_time']),
+            sprintf("contentHtml: '%s'", $array['contentHtml']),
+
+        ];
+        $data = [];
+        foreach ($array['data'] as $field => $value) {
+            $data[] = sprintf("%s: '%s'", $field, $value);
+        }
+
+        $pcs['content'] = sprintf("content: '%s'", implode(',', $data));
+        $out[] = implode(',', $pcs);
+    }
+
+    $out = '[{' . implode('},{', $out) . '}]';
+
+    file_put_contents('scenario' . ($index + 1) . '.txt', $out);
+}

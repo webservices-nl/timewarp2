@@ -27,7 +27,7 @@ class Relocation extends AbstractEvent
     {
         return [
             'address' => $this->address,
-            'square_meters' => $this->squareMeters,
+            'squareMeters' => $this->squareMeters,
         ];
     }
 }

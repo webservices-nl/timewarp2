@@ -35,13 +35,17 @@ abstract class AbstractEvent implements WritableToStream
 
     abstract public function getData();
 
+
+    public abstract function formatHtml();
+
     public function toStreamData()
     {
         return [
             'eventId' => (new UUID())->toNative(),
             'eventType' => $this->type,
-            'date_time' => $this->dateTime->format('Y-m-d'),
+            'dateTime' => $this->dateTime->format('Y-m-d'),
             'data' => $this->getData(),
+            'contentHtml'=>$this->formatHtml()
         ];
     }
 }

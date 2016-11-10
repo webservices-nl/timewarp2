@@ -22,6 +22,6 @@ class LegalForm extends AbstractEvent
 
     public function getData()
     {
-        return ['legal_form' => $this->legalForm];
+        return ['legalForm' => $this->legalForm];
     }
 }

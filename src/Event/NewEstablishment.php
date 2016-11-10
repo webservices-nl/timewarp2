@@ -26,7 +26,7 @@ class NewEstablishment extends AbstractEvent
     public function getData()
     {
         return [
-            'company_name' => $this->companyName,
+            'companyName' => $this->companyName,
             'activity' => $this->activity,
         ];
     }
