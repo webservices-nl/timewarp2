@@ -35,9 +35,6 @@ abstract class AbstractEvent implements WritableToStream
 
     abstract public function getData();
 
-
-    public abstract function formatHtml();
-
     public function toStreamData()
     {
         return [
@@ -45,7 +42,6 @@ abstract class AbstractEvent implements WritableToStream
             'eventType' => $this->type,
             'dateTime' => $this->dateTime->format('Y-m-d'),
             'data' => $this->getData(),
-            'contentHtml'=>$this->formatHtml()
         ];
     }
 }

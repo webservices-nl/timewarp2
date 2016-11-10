@@ -59,16 +59,14 @@ foreach ($scenarios as $index => $scenario) {
             "badgeIconClass: 'glyphicon-check'",
             sprintf("eventId: '%s'", $array['eventId']),
             sprintf("title: '%s'", $array['eventType']),
-            sprintf("when: '%s'", $array['date_time']),
-            sprintf("contentHtml: '%s'", $array['contentHtml']),
-
+            sprintf("when: '%s'", $array['dateTime']),
         ];
         $data = [];
         foreach ($array['data'] as $field => $value) {
-            $data[] = sprintf("%s: '%s'", $field, $value);
+            $data[] = sprintf("<b>%s</b>: '%s'", $field, $value);
         }
 
-        $pcs['content'] = sprintf("content: '%s'", implode(',', $data));
+        $pcs['contentHtml'] = sprintf("content: '%s'", addslashes(implode(',', $data)));
         $out[] = implode(',', $pcs);
     }
 

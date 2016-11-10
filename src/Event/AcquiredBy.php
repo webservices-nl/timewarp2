@@ -26,4 +26,6 @@ class AcquiredBy extends AbstractEvent
             'companyName' => $this->companyName
         ];
     }
+
+
 }
