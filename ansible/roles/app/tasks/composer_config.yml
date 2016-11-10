@@ -14,11 +14,6 @@
   register: app_projects_list
   tags: ["app", "composer"]
 
-- name: "disable xdebug for better living..."
-  command: php5dismod xdebug
-  when: xdebug.install is defined and xdebug.install
-  tags: ["app", "composer"]
-
 - name: "create project from gitlabs repo"
   with_items: "{{ app.projects }}"
   composer:
@@ -27,9 +22,5 @@
     working_dir: "{{ item.working_dir|default('/var/www') }}"
     prefer_dist: yes
   ignore_errors: yes
-  tags: ["app", "composer"]
-
-- name: "re-enable xdebug"
-  command: php5enmod xdebug
-  when: xdebug.install is defined and xdebug.install
+  when: app.projects|length > 0
   tags: ["app", "composer"]

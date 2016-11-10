@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 require 'yaml'
 dir = File.dirname(File.expand_path(__FILE__))
-configValues = YAML.load_file("all.yml")
+configValues = YAML.load_file("ansible/vars/all.yml")
 data = configValues['vagrant_local']
 
 vagrant_home = (ENV['VAGRANT_HOME'].to_s.split.join.length > 0) ? ENV['VAGRANT_HOME'] : "#{ENV['HOME']}/.vagrant.d"
@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
 
     config.vm.box = "#{data['vm']['base_os']}/#{data['vm']['base_box']}"
     config.vm.hostname = "#{data['vm']['hostname']}"
-    config.vm.synced_folder "../", "/vagrant"
+    config.vm.synced_folder ".", "/vagrant"
 
     # set network options
     config.vm.network :private_network, ip: "#{data['vm']['private_ip']}"

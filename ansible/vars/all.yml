@@ -8,7 +8,7 @@ server:
 
 vagrant_local:
   install: yes
-  vm: { base_os: "ubuntu", base_box: "trusty64", hostname: "ws.dev", private_ip: "192.168.77.101", public_ip: '', memory: '512', cpus: "1" , sharedfolder: ./, useVagrantCloud: '1', syncType: '0' }
+  vm: { base_os: "ubuntu", base_box: "trusty64", hostname: "timewarp.dev", private_ip: "192.168.44.101", public_ip: '', memory: '512', cpus: "1" , sharedfolder: ./, useVagrantCloud: '1', syncType: '0' }
 
 nginx:
   install: yes
@@ -20,7 +20,7 @@ mailhog:
   port: 25
 
 mariadb:
-  install: yes
+  install: no
   root_password: root
   database: wsdev
   user: user
@@ -33,7 +33,7 @@ redis:
   port: '6379'
 
 rabbitmq:
-  install: yes
+  install: no
   users:
     - name: "root"
       password: "bla"
@@ -47,7 +47,7 @@ rabbitmq:
     - name: "rabbitmq_management"
 
 elasticsearch:
-  install: yes
+  install: no
   version: 2.1.1
   port: '9200'
   plugins:
@@ -58,7 +58,7 @@ elasticsearch:
   proxy_enabled: yes
 
 sphinxsearch:
-  install: yes
+  install: no
   sources: []
 #    - source:
 #        name: "main_source"
@@ -81,7 +81,7 @@ sphinxsearch:
   common: {}
 
 php:
-  install: yes
+  install: no
   version: 7.0
   extra_packages: [memcached]
   modules:
@@ -97,7 +97,7 @@ php:
   pecl_packages: []
 
 xdebug:
-  install: yes
+  install: no
   settings:
     xdebug_idekey: "PHPSTORM"
 #    xdebug_color_cli: "2"
@@ -114,7 +114,7 @@ xdebug:
 #      xdebug_remote_log: "/tmp/xdebug.log"
 
 sqlite:
-  install: yes
+  install: no
   install_dir: "/var/lib/sql"
   dbs: []
 

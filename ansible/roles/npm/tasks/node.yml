@@ -19,12 +19,12 @@
     state: 'absent'
   tags: ['nodejs', 'remove-old-sources']
 
-- name: "Add nodesource gpg keys"
-  when: node_distro_supported|success
-  apt_key:
-    url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
-    state: "present"
-  tags: ["nodejs", "add-nodesource-keys"]
+#- name: "Add nodesource gpg keys"
+#  when: node_distro_supported|success
+#  apt_key:
+#    url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
+#    state: "present"
+#  tags: ["nodejs", "add-nodesource-keys"]
 
 - name: "Add nodesource apt sources list deb"
   when: node_distro_supported|success
