@@ -1,0 +1,19 @@
+#############################################################################
+## index definition
+#############################################################################
+
+{% for item in sphinxsearch_indexes_vars %}
+index {{ item.index.name }}
+{
+{% for key,value in item.index.iteritems() %}
+
+{% if key != 'name' %}
+  {{ key }} = {{ value }}
+{% endif %}
+{% endfor %}
+{% if item.index.path is not defined %}
+   path = {{ sphinx_data_dir }}/{{ item.index.name }}
+{% endif %}
+
+}
+{% endfor %}

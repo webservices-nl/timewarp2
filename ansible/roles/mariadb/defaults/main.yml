@@ -1,0 +1,10 @@
+---
+
+www_user: "{% if ansible_os_family == 'RedHat' or ansible_os_family == 'Suse' %}nginx{% elif ansible_os_family == 'Debian' %}www-data{% elif ansible_os_family == 'FreeBSD' %}www{% endif %}"
+www_group: "{{ www_user }}"
+
+adminer_install_dir: "/usr/share/adminer"
+adminer_install_filename: "index.php"
+adminer_symlink_dirs:
+  - '/var/www/html/'
+adminer_add_nginx_config: yes

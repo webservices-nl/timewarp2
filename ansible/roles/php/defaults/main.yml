@@ -1,0 +1,33 @@
+---
+# possible php version ubuntu has support for
+php_versions:
+  - '5.4'
+  - '5.5'
+  - '5.6'
+  - '7.0'
+
+php_version: "{% if php.version|string in php_versions %}{{php.version|string}}{% else %}7.0{% endif %}"
+php_simple_version: "{{php_version|replace('.','')}}"
+# set the version parts  as integers for easy bitwise comparisons
+php_major_version: "{{ php_version.split('.')[0]|int}}"
+php_minor_version: "{{ php_version.split('.')[1]|default(0)|int}}"
+
+php_configs:
+  'default':
+    etc-path: "/etc/php/{{php_version}}"
+    ppa: "ppa:ondrej/php"
+    packages:
+     - "php{{php_version}}"
+     - "php{{php_version}}-fpm"
+    php-fpm: "php{{php_version}}-fpm"
+    php-module-prefix: "php{{php_version}}"
+    sock: "/var/run/php/php{{php_version}}-fpm.sock"
+  '5.4':
+    etc-path: "/etc/php5"
+    ppa: "ppa:ondrej/php5-oldstable"
+    packages:
+     - "php5"
+     - "php5-fpm"
+    php-fpm: "php5-fpm"
+    php-module-prefix: "php{{php_major_version}}"
+    sock: "/var/run/php5-fpm.sock"

@@ -1,0 +1,27 @@
+---
+
+- name: "Check for an existing Redis installation"
+  shell: 'test -f {{ redis_path }}/bin/redis-cli && echo "yes" || echo "no"'
+  when: redis.install is defined and redis.install
+  changed_when: False
+  register: redis_installed_status
+  tags: ["redis", "check-is-installed"]
+
+- name: "Get current installed version of Redis"
+  shell: "{{ redis_path }}/bin/redis-cli -v | awk {'print $2'}"
+  when: redis_installed_status is defined and redis_installed_status.stdout == "yes"
+  register: redis_installed_version
+  tags: ["redis", "which-version"]
+
+- name: "Register current installed Redis"
+  when: redis_installed_version is defined and redis_installed_version.stdout == "yes"
+  set_fact:
+    redis_is_installed: '{{ redis_installed_status.stdout == "yes" and redis_installed_version.stdout == redis_version }}'
+
+- include: "install.yml"
+  when: redis.install is defined and redis.install and redis_is_installed is not defined
+  tags: ["redis", "redis-installation"]
+
+- include: "configure.yml"
+  when: redis.install is defined and redis.install and redis_installed_version
+  tags: ["redis", "redis-configuration"]

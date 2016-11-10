@@ -1,0 +1,43 @@
+---
+- name: "ensure MailHog is enabled and will start on boot"
+  service:
+    name: mailhog
+    state: started
+    enabled: yes
+  tags: ['mailhog-configure', 'enable-service']
+
+- name: "check for e-mail"
+  uri:
+    url: "http://{{ vagrant_local.vm.hostname }}:8025/api/v2/messages"
+    method: GET
+    body_format: json
+    return_content: yes
+  ignore_errors: true
+  register: mailhog_mail_results
+
+- name: "set message count"
+  ignore_errors: true
+  set_fact:
+    message_count: "{{  (mailhog_mail_results.content|from_json)['count']|int }}"
+  when: mailhog_mail_results is defined
+- set_fact:
+    message_count: 0
+  when: mailhog_mail_results is undefined
+
+- name: "gather some details for e-mail"
+  when: message_count == '0'
+  become: yes
+  command: lshw -short -quiet
+  register: hardware_result
+  ignore_errors: true
+
+- name: "Send a test email"
+  when: message_count == '0'
+  mail:
+    host: "localhost"
+    port: "{{ mailhog_bind_port }}"
+    charset: "utf8"
+    from: "{{vagrant_local.vm.hostname}} <theghost@{{ vagrant_local.vm.hostname}}>"
+    to: "cody monkey <codemonkey@webservices.nl>"
+    subject: "ansible-report {{ ansible_hostname }}"
+    body: "System {{ vagrant_local.vm.hostname }} has been successfully provisioned.\n\n{{ hardware_result.stdout }}"

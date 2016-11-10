@@ -1,0 +1,27 @@
+---
+
+- name: "encrypt HTTP auth passwords"
+  htpasswd:
+    path: "{{elasticsearch_home}}/.htpasswd"
+    name: "{{item.name}}"
+    password: "{{item.password}}"
+  with_items: "{{ elasticsearch_proxy_auth_users }}"
+  when: elasticsearch_proxy_auth
+  tags: ["elasticsearch", "elasticsearch-proxy"]
+
+- name: "configure nginx as proxy"
+  when: nginx.install is defined and nginx.install
+  template:
+    src: "nginx.conf.j2"
+    dest: "/etc/nginx/sites-available/elasticsearch.conf"
+  notify: "nginx reload"
+  tags: ["elasticsearch", "elasticsearch-proxy"]
+
+- name: "enable the proxy as nginx server block"
+  when: nginx.install is defined and nginx.install
+  file:
+    src: "/etc/nginx/sites-available/elasticsearch.conf"
+    dest: "/etc/nginx/sites-enabled/elasticsearch.conf"
+    state: "link"
+    validate: "nginx -t -c %s"
+  tags: ["elasticsearch", "elasticsearch-proxy"]

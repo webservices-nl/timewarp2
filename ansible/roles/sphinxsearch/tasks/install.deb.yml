@@ -1,0 +1,13 @@
+---
+
+- name: "add repository keys"
+  apt_repository:
+    repo: 'ppa:builds/sphinxsearch-rel22'
+  tags: ['add-apt-keys']
+
+- name: "Install sphinxsearch"
+  apt:
+    name: "sphinxsearch"
+    update_cache: yes
+    state: "present"
+  tags: ['install-binary']

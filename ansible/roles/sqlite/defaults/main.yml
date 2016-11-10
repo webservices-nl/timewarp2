@@ -1,0 +1,3 @@
+---
+sqlite.dbs: []
+sqlite.install_dir: "/var/lib/sqlite"

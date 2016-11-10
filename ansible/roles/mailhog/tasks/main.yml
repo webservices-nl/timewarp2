@@ -1,0 +1,17 @@
+---
+
+- name: "Check if MailHog is installed"
+  stat: path=/etc/init.d/mailhog
+  when: mailhog.install is defined and mailhog.install
+  register: service_status_mailhog
+  tags: ["mailhog-check"]
+
+- name: "Install MailHog"
+  include: install.yml
+  when: service_status_mailhog.stat is defined and service_status_mailhog.stat.exists == false
+  tags: ["mailhog-install"]
+
+- name: "configure MailHog"
+  include: configure.yml
+  when: service_status_mailhog.stat is defined and service_status_mailhog.stat.exists == true
+  tags: ["mailhog-configure"]

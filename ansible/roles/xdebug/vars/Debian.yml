@@ -1,0 +1,2 @@
+---
+php_extension_conf_path: "{{php_config['etc-path']}}/mods-available"

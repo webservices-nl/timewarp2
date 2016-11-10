@@ -1,0 +1,16 @@
+#############################################################################
+## searchd settings
+#############################################################################
+
+searchd
+{
+{% for a in sphinxsearch_searchd_vars.listen %}
+  listen = {{a}}
+{% endfor %}
+
+{% for key, value in sphinxsearch_searchd_vars.iteritems() %}
+{% if key != 'listen' %}
+  {{ key }} = {{ value }}
+{% endif %}
+{% endfor %}
+}

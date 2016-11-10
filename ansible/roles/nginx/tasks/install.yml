@@ -1,0 +1,14 @@
+
+- name: "uninstall Apache2"
+  become: yes
+  apt:
+    pkg: "apache2"
+    state: "absent"
+  tags: ["nginx", "apache"]
+
+- name: "Install Nginx"
+  become: yes
+  apt:
+    pkg: "nginx"
+    state: "latest"
+  tags: ["nginx"]

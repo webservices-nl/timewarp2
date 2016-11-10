@@ -1,0 +1,14 @@
+---
+# application tasks to be customized and to run after the main provision
+
+# Add Vagrant User To www-data
+- name: "add vagrant user to www-data"
+  user:
+    name: "{{ ansible_user }}"
+    groups: "{{ www_user }}"
+    append: yes
+  tags: ["app"]
+
+- include: "composer_config.yml"
+  when: composer.install is defined and composer.install and app.projects
+  tags: ["app", "composer"]

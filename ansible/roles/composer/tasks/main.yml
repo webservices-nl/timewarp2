@@ -1,0 +1,5 @@
+---
+
+- include: composer.yml
+  when: composer.install is defined and composer.install and php_installed_version is defined
+  tags: ["composer", "install"]

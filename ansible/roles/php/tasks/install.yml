@@ -1,0 +1,55 @@
+---
+- name: "Set PHP install config to 5.4 configuration"
+  set_fact:
+    php_config: "{{php_configs['5.4']}}"
+  when: "php_version|version_compare('5.4', '==')"
+  tags: ['php', 'installiotion-configuration']
+
+- name: "Set PHP install config to default configuration"
+  set_fact:
+    php_config: "{{ php_configs['default'] }}"
+  when: "php_config is not defined"
+  tags: ['php', 'installiotion-configuration']
+
+- name: "Add PPA Repository"
+  become: yes
+  apt_repository:
+    repo: "{{ php_config['ppa'] }}"
+  tags: ["php", "php-install"]
+
+- name: "Update apt"
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: "38400"
+  tags: ["php", "php-install"]
+
+- name: "Install php"
+  become: yes
+  apt:
+    pkg: "{{ item|string }}"
+    state: "latest"
+  with_items: "{{ php_config.packages }}"
+  tags: ["php", "php-install"]
+
+- name: "Install extra packages"
+  become: yes
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+  with_items: "{{ php.extra_packages }}"
+  when: php.extra_packages is defined
+  tags: ["php", "php-install-packages"]
+
+- name: "Install PHP modules"
+  become: yes
+  apt:
+    pkg: "{{ item|regex_replace('php', php_config['php-module-prefix']) }}"
+    state: "latest"
+  with_items: "{{ php.modules }}"
+  when: php.modules is defined
+  tags: ["php", "php-install-modules"]
+
+- name: "Register installed version"
+  shell: 'php -r "echo PHP_VERSION;"'
+  register: php_installed_version

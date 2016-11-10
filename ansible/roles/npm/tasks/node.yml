@@ -1,0 +1,49 @@
+---
+
+- name: "Check Ubuntu distro is supported"
+  get_url: url="https://deb.nodesource.com/node/dists/{{ ansible_distribution_release }}/Release" dest=/dev/null
+  register: node_distro_supported
+  tags: ['nodejs', 'node_support']
+
+- name: "Remove old Chris Lea' ppa"
+  when: node_distro_supported|success
+  apt_repository:
+    repo: 'ppa:{{ node_ppa }}'
+    state: 'absent'
+  tags: ['nodejs', 'remove-old-ppa']
+
+- name: "Remove old 'Chris Lea' sources"
+  when: node_distro_supported|success
+  file:
+    path: '/etc/apt/sources.list.d/chris-lea-node_js-{{ ansible_distribution_release }}.list'
+    state: 'absent'
+  tags: ['nodejs', 'remove-old-sources']
+
+- name: "Add nodesource gpg keys"
+  when: node_distro_supported|success
+  apt_key:
+    url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key'
+    state: "present"
+  tags: ["nodejs", "add-nodesource-keys"]
+
+- name: "Add nodesource apt sources list deb"
+  when: node_distro_supported|success
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node {{ ansible_distribution_release }} main"
+    state: "present"
+  tags: ["nodejs", "install-nodesource-apt-source"]
+
+- name: "Add nodesource apt sources list deb src"
+  when: node_distro_supported|success
+  apt_repository:
+    repo: "deb-src https://deb.nodesource.com/node {{ ansible_distribution_release }} main"
+    state: 'present'
+  tags: ["nodejs", "install-nodesource-apt-source-src"]
+
+- name: "Install nodejs"
+  when: node_distro_supported|success
+  apt:
+   pkg: "nodejs"
+   state: "latest"
+   update_cache: yes
+  tags: ["nodejs", "install-node"]

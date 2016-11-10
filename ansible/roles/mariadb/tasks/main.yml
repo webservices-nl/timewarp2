@@ -1,0 +1,6 @@
+---
+
+- include: mariadb.yml
+  when: mariadb.install is defined and mariadb.install
+  tags: ["mariadb"]
+

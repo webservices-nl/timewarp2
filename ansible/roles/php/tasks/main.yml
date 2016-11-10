@@ -1,0 +1,19 @@
+---
+
+- name: "Install php version"
+  include: install.yml
+  when: php.install is defined and php.install
+
+- name: "Create PHP info page"
+  template:
+    src: "info.php.tpl"
+    dest: "/var/www/html/info.php"
+    mode: "0644"
+  notify: "restart php-fpm"
+  when: php.install is defined and php.install
+
+- include: configure.yml
+  when: php.install is defined and php.install
+
+- include: pecl.yml
+  when: php.pecl_packages is defined and php.pecl_packages

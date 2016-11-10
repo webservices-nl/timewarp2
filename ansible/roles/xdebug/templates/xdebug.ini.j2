@@ -1,0 +1,47 @@
+[XDebug]
+zend_extension="xdebug.so"
+
+; Stacktraces will be shown by default on an error event. As this is one of the basic functions of Xdebug
+; it is advisable to leave this setting set to 1.
+xdebug.default_enable = {{ settings.xdebug_default_enable }}
+
+xdebug.idekey = "{{ settings.xdebug_idekey }}"
+
+; Controls the protection mechanism for infinite recursion protection. The value of this setting is the maximum level
+; of nested functions that are allowed before the script will be aborted.
+xdebug.max_nesting_level = {{ settings.xdebug_max_nesting_level }}
+
+; Enables Xdebug's profiler which creates files in the profile output directory. Those files can be read by
+; KCacheGrind to visualize your data. This setting can not be set in your script with ini_set(). If you want to
+; selectively enable the profiler, please set xdebug.profiler_enable_trigger to 1 instead of using this setting.
+xdebug.profiler_enable = {{ settings.xdebug_profiler_enable}}
+
+; When this setting is set to 1, you can trigger the generation of profiler files by using the XDEBUG_PROFILE
+; GET/POST parameter, or set a cookie with the name XDEBUG_PROFILE. This will then write the profiler data to defined
+; directory. In order to prevent the profiler to generate profile files for each request,
+; you need to set xdebug.profiler_enable to 0.
+; Access to the trigger itself can be configured through xdebug.profiler_enable_trigger_value.
+xdebug.profiler_enable_trigger = {{ settings.xdebug_profiler_enable_trigger}}
+
+; This switch controls whether Xdebug should try to contact a debug client which is listening on the host and port as
+; set with the settings xdebug.remote_host and xdebug.remote_port.
+; If a connection can not be established the script will just continue as if this setting was 0.
+xdebug.remote_enable = {{ settings.xdebug_remote_enable }}
+
+; if enabled, the xdebug.remote_host setting is ignored and Xdebug will try to connect to the client that made the
+; HTTP request. It checks the $_SERVER['REMOTE_ADDR'] variable to find out which IP address to use.
+; Please note that there is no filter available, and anybody who can connect to the webserver will then be able to
+; start a debugging session, even if their address does not match xdebug.remote_host.
+xdebug.remote_connect_back = {{ settings.xdebug_remote_connect_back }}
+
+xdebug.remote_port={{ settings.xdebug_remote_port }}
+xdebug.remote_handler = dbgp
+xdebug.remote_log = {{ settings.xdebug_remote_log }}
+xdebug.remote_autostart = {{ settings.xdebug_remote_autostart }}
+
+; By default Xdebug overloads var_dump() with its own improved version for displaying variables when the html_errors
+; php.ini setting is set to 1. In case you do not want that, you can set this setting to 0,
+; but check first if it's not smarter to turn off html_errors.
+; You can also use 2 as value for this setting. Besides formatting the var_dump() output nicely, it will also add
+; filename and line number to the output. The xdebug.file_link_format setting is also respected. (New in Xdebug 2.3)
+xdebug.overload_var_dump= {{ settings.xdebug_overload_var_dump }}

@@ -1,0 +1,16 @@
+---
+
+- include: "install.deb.yml"
+  when: ansible_os_family == "Debian"
+  tags: ["sphinxsearch", "sphinxsearch-install"]
+
+- include: "configure.yml"
+  tags: ["sphinxsearch", "sphinxsearch-configure"]
+
+- name: "check sphinxsearch is running and enabled"
+  service:
+    name: "sphinxsearch"
+    state: "running"
+    enabled: "yes"
+  when: sphinxsearch.install is defined and sphinxsearch.install
+  tags: ["sphinxsearch", "enable"]

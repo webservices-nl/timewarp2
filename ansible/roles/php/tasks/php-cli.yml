@@ -1,0 +1,15 @@
+---
+
+- name: "Ensure timezone is set in cli php.ini"
+  lineinfile:
+    dest: "{{ phpcli.stat.path }}"
+    regexp: "date.timezone ="
+    line: "date.timezone = {{ server.timezone }}"
+  tags: ["php", "timezone"]
+
+- name: "Enabling opcache cli"
+  lineinfile:
+    dest: "{{ phpcli.stat.path }}"
+    regexp: ';?opcache.enable_cli=\d'
+    line: 'opcache.enable_cli=1'
+  tags: ["php", "opcache"]

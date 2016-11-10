@@ -1,0 +1,5 @@
+---
+
+- include: "sphinxsearch.yml"
+  when: sphinxsearch.install is defined and sphinxsearch.install
+  tags: ["sphinxsearch"]

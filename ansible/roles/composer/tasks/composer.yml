@@ -1,0 +1,68 @@
+---
+
+- name: "download composer installer"
+  get_url:
+    url: "https://getcomposer.org/installer"
+    dest: "/tmp/composer-installer.php"
+    mode: 0755
+  tags: ['composer', 'download']
+
+- name: "run composer installer"
+  shell: "php composer-installer.php --install-dir={{ composer_install_dir }} --filename={{ composer_filename }}"
+  args:
+    chdir: /tmp
+    creates: "{{ composer_install_dir }}/{{ composer_filename }}"
+  tags: ['composer', 'install']
+  register: composer_installed
+  failed_when: false
+
+- name: "make composer writable for current user"
+  when: composer_installed
+  file:
+   path: "{{ composer_install_dir }}/{{ composer_filename }}"
+   mode: "ugo+rwx"
+
+- name: "check if composer file is present"
+  when: composer_installed
+  stat:
+    path: "{{ composer_global_dir }}.composer.json"
+  register: composerfile_exists
+
+- name: "symlink php5 php5enmod"
+  file:
+    src: "/usr/sbin/php5enmod"
+    dest: "/usr/sbin/phpenmod"
+    state: link
+  when: "{{ php_version == '5.4'}}"
+
+- name: "symlink php5 php5dismod"
+  file:
+    src: "/usr/sbin/php5dismod"
+    dest: "/usr/sbin/phpdismod"
+    state: link
+  when: "{{ php_version == '5.4'}}"
+
+- name: "create global composer directory when not present"
+  when: composerfile_exists.stat.exists == false
+  file:
+    path: "{{ composer_global_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: yes
+    state: "directory"
+  tags: ['composer', 'install']
+
+- name: "add composer/vendor to .profile"
+  lineinfile:
+    dest: "/home/vagrant/.profile"
+    line: 'PATH="/home/vagrant/.composer/vendor/bin:$PATH"'
+    create: yes
+
+- name: "set rights to everything composer in order to work"
+  file:
+    path: "{{ composer_global_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    recurse: yes
+    state: "directory"
+  tags: ['composer', 'install']

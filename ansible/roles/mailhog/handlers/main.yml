@@ -1,0 +1,8 @@
+---
+- name: "restart mailhog"
+  service:
+    name: mailhog
+    state: restarted
+
+- name: "reload upstart"
+  shell: initctl reload-configuration

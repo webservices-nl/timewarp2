@@ -1,0 +1,10 @@
+---
+
+# tasks file for roles/npm
+- include: node.yml
+  when: npm.install is defined and npm.install
+  tags: ["node"]
+
+- include: npm.yml
+  when: npm.install is defined and npm.install
+  tags: ["npm"]
