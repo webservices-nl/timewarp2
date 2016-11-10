@@ -1,0 +1,45 @@
+---
+
+# Retrieve the current hostname, because {{ ansible_hostname }} still contains the old name
+- shell: hostname
+  register: current_hostname
+
+- name: "ensure python-soft-prop is installed"
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+  with_items:
+   - python-software-properties
+  tags: ['mariadb-install', 'pre-requisites']
+
+- name: "ensure the key is present"
+  apt_key:
+    id: "0xcbcb082a1bb943db"
+    keyserver: "keyserver.ubuntu.com"
+  tags: ['mariadb-install', 'apt-get key']
+
+- name: "add MariaDB-Repository"
+  become: yes
+  apt_repository:
+    repo: "deb http://ftp.nluug.nl/db/mariadb/repo/10.1/ubuntu {{ ansible_distribution_release }} main"
+    state: "present"
+  notify:
+    - update apt
+  tags: ['mariadb-install', 'add MariaDb repo']
+
+- name: "update apt"
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+  tags: ['mariadb-install', 'update apt']
+
+- name: "install MariaDB Packages"
+  become: yes
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+  with_items:
+    - mariadb-server
+    - python-mysqldb
+  tags: ['mariadb-install', 'install packages']

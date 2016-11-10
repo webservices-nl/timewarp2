@@ -1,0 +1,62 @@
+---
+
+- name: "update apt"
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+
+- name: "install system packages"
+  become: yes
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+  with_items:
+    - curl
+    - wget
+    - python-software-properties
+    - software-properties-common
+
+- name: "install extra Packages"
+  become: yes
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+  with_items: "{{ server.packages }}"
+  when: server.packages is defined
+
+- name: "autoremove unused packages"
+  become: yes
+  command: "apt-get -y autoremove"
+  register: check_autoremove
+  changed_when: "'packages will be REMOVED' in check_autoremove.stdout"
+
+- name: "configure the timezone"
+  become: yes
+  template:
+    src: "timezone.tpl"
+    dest: "/etc/timezone"
+
+- name: "more configure the timezone"
+  become: yes
+  file:
+    src: "/usr/share/zoneinfo/{{server.timezone}}"
+    dest: "/etc/localtime"
+    state: "link"
+    force: yes
+    backup: yes
+
+- locale_gen:
+    name: "{{server.locale}}"
+    state: present
+  become: yes
+
+# install NTP and sync time settings
+- include: ntp.yml
+  tags: ['ntp']
+
+# configure swap
+- include: swap.yml
+  become: yes
+  when: server.swap is defined and server.swap
+  tags: ['swap']

@@ -1,0 +1,35 @@
+- name: "Install php-dev"
+  apt:
+    pkg: "{{'php-dev'|regex_replace('php', php_config['php-module-prefix']) }}"
+    state: "present"
+  tags: ["php", "php-install"]
+
+- name: "Install Pecl packages"
+  shell: echo "\n\n\n\n\n\n\n\n\n" | pecl install {{ item }}
+  register: pecl_result
+  changed_when: "'already installed' not in pecl_result.stdout"
+  failed_when: "pecl_result.stderr or ('ERROR' in pecl_result.stdout)"
+  with_items: "{{ php.pecl_packages }}"
+  tags: ["php", "pecl-install"]
+
+- name: "Create extension .ini file"
+  template:
+    src: "extension.tpl"
+    dest: "{{ php_config['etc-path'] }}/mods-available/{{ item }}.ini"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items: "{{ php.pecl_packages }}"
+  tags: ["php", "pecl-install"]
+
+- name: "Enable extension"
+  command: "phpenmod {{ item }}"
+  with_items: "{{ php.pecl_packages }}"
+  when: "{{ php_major_version | version_compare('7', operator='eq') }}"
+  tags: ["php", "pecl-enable"]
+
+- name: "Enable extension"
+  command: "php5enmod {{ item }}"
+  with_items: "{{ php.pecl_packages }}"
+  when: "{{ php_major_version | version_compare('5', operator='eq') }}"
+  tags: ["php", "pecl-enable"]

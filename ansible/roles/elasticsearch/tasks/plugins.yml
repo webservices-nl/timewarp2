@@ -1,0 +1,35 @@
+---
+# because elasticsearch_plugin is still buggy
+- name: "create Plugin directory"
+  file:
+    path: "{{elasticsearch_plugindir}}"
+    state: "directory"
+    owner: "{{elasticsearch_user}}"
+    group: "{{elasticsearch_group}}"
+    recurse: yes
+
+# check for current installed plugins (a list which just the filedir name (can be anything)
+- name: "elasticSearch list installed plugins"
+  command: "{{elasticsearch_home}}/bin/plugin {%if elasticsearch_major_version == 1 %} --{% endif %}list"
+  register: elasticsearch_plugins_installed
+  tags: ["elasticsearch", "plugins-list"]
+
+# install syntax has changed with version 2 (install instead of --install)
+- name: "elasticSearch install plugins"
+  command: '{{elasticsearch_home}}/bin/plugin {%if elasticsearch_major_version == 1 %} --{% endif %}install {{item.url|default(item.name) }} creates={{elasticsearch_plugindir}}/{{ item.name | regex_replace("[\w]*[-|\/]","") }}'
+  when: item.remove is not defined and item.name|regex_replace("[\w]*[-|\/]","") not in elasticsearch_plugins_installed.stdout
+  with_items: "{{ elasticsearch_plugins }}"
+  ignore_errors: yes
+  notify:
+    - elasticsearch restart
+  tags: ["elasticsearch", "plugins-install"]
+
+# remove syntax has changed with version 2 (remove instead of --install)
+- name: "elasticSearch remove plugins"
+  command: '{{elasticsearch_home}}/bin/plugin {%if elasticsearch_major_version == 1 %} --{% endif %}remove {{ item.name | regex_replace("[\w]*[-|\/]","") }}'
+  when: item.remove is defined and item.remove
+  with_items: "{{ elasticsearch_plugins }}"
+  ignore_errors: yes
+  notify:
+    - elasticsearch restart
+  tags: ["elasticsearch", "remove_plugins"]

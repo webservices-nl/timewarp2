@@ -1,0 +1,22 @@
+---
+- hosts: all
+  gather_facts: true
+  become: yes
+  vars_files:
+    - vars/all.yml
+  roles:
+    - { "role":"server", "tags":["server"]}
+    - { "role":"vagrant_local", "tags":["vagrant_local"]}
+    - { "role":"nginx", "tags":["nginx"]}
+    - { "role":"php", "tags":["php"]}
+    - { "role":"sqlite", "tags":["sqlite"]}
+    - { "role":"mailhog", "tags":["mailhog"]}
+    - { "role":"mariadb", "tags":["mariadb"]}
+    - { "role":"sphinxsearch", "tags":["sphinxsearch"]}
+    - { "role":"redis", "tags":["redis"]}
+    - { "role":"rabbitmq", "tags":["rabbitmq"]}
+    - { "role":"elasticsearch", "tags":["elasticsearch"]}
+    - { "role":"xdebug", "tags":["xdebug"]}
+    - { "role":"composer", "tags":["composer"]}
+    - { "role":"npm", "tags":["npm"]}
+    - { "role":"app", "tags":["app"]}

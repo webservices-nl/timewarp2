@@ -1,0 +1,7 @@
+---
+# defaults file for roles/npm
+npm:
+  update: no
+  packages: []
+
+node_ppa: 'chris-lea/node.js'

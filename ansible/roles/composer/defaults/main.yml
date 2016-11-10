@@ -1,0 +1,11 @@
+---
+
+composer_filename: "composer"
+composer_filepath: "{{ composer_install_dir }}/{{ composer_filename }}"
+composer_global_dir: ".composer"
+composer_install_dir: "/usr/local/bin"
+
+#default values
+composer:
+  install: no
+  packages: []

@@ -1,0 +1,4 @@
+---
+- name: "Install Sqlite"
+  include: install.yml
+  when: sqlite.install is defined and sqlite.install

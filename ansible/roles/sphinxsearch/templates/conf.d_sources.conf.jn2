@@ -1,0 +1,15 @@
+#############################################################################
+## data source definition
+#############################################################################
+
+{% for item in sphinxsearch_sources_vars %}
+
+source {{ item.source.name }}
+{
+{% for key,value in item.source.iteritems() %}
+{% if key != 'name' %}
+  {{ key }} = {{ value }}
+{% endif %}
+{% endfor %}
+}
+{% endfor %}

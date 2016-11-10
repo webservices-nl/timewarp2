@@ -1,0 +1,102 @@
+---
+
+- name: "install dependencies"
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+  with_items:
+    - "make"
+  tags: ["redis-install", "dependencies"]
+
+- name: "download redis tar"
+  get_url:
+    url: "http://download.redis.io/releases/redis-{{ redis_version }}.tar.gz"
+    dest: "/tmp/redis-{{ redis_version }}.tar.gz"
+  tags: ["redis-install", "download"]
+
+- name: "extract redis tar"
+  unarchive:
+    src: "/tmp/redis-{{ redis_version }}.tar.gz"
+    dest: "/tmp"
+    copy: "no"
+  tags: ["redis-install", "install"]
+
+- name: "compile redis"
+  command: "make -j5"
+  args:
+     chdir: "/tmp/redis-{{ redis_version }}"
+     creates: "/tmp/redis-{{ redis_version }}/src/redis-server"
+  tags: ["redis-install", "make-redis-1"]
+
+- name: "create directory"
+  file:
+    path: "{{ item }}"
+    state: "directory"
+  with_items:
+    - "{{ redis_path }}-{{ redis_version }}"
+    - "{{ redis_conf_path }}"
+    - "{{ redis_pid_path }}"
+    - "{{ redis_db_path }}/{{ redis.port }}"
+  tags: ["redis-install", "create-dirs"]
+
+- name: "make redis"
+  command: "make PREFIX={{ redis_path }}-{{ redis_version }} install"
+  args:
+     chdir: "/tmp/redis-{{ redis_version }}"
+     creates: "{{ redis_path }}-{{ redis_version }}/bin/redis-server"
+  tags: ["redis-install", "make-redis-2"]
+
+- name: "link Redis folder"
+  file:
+    src: "{{ redis_path }}-{{ redis_version }}"
+    dest: "{{ redis_path }}"
+    state: "link"
+  tags: ["redis-install", "link folder"]
+
+- name: "create init script"
+  template:
+    src: "init.tpl"
+    dest: "/etc/init.d/redis"
+    mode: "0755"
+  tags: ["redis-install", "initialization"]
+
+- name: "set to start boot"
+  service:
+    name: "redis"
+    enabled: yes
+  tags: ["redis-install", "boot-redis"]
+
+- name: "create config file"
+  template:
+    src: "conf.tpl"
+    dest: "{{ redis_conf_path }}/{{ redis.port }}.conf"
+  notify: "restart-redis"
+  tags: ["redis-install", "configure"]
+
+- name: "set bin folder into environment file"
+  lineinfile: >
+    dest=/etc/environment
+    state=present
+    backrefs=yes
+    regexp='PATH=(["]*)((?!.*?{{ redis_path }}/bin).*?)(["]*)$'
+    line="PATH=\1\2:{{ redis_path }}/bin\3"
+
+- name: "flush handlers to apply config changes"
+  meta: flush_handlers
+
+- name: "install redis php module"
+  become: yes
+  apt:
+    pkg: "{{php_module_prefix}}-redis"
+    state: "latest"
+  when: php.install is defined and php.install
+  tags: ["redis-install", "redis-php"]
+
+- name: "Remove tmp files"
+  file:
+    path: "/tmp/{{ item }}"
+    state: absent
+  with_items:
+    - "redis-{{ redis_version }}"
+    - "redis-{{ redis_version }}.tar.gz"
+  tags: ["redis-install", "redis-cleanup"]

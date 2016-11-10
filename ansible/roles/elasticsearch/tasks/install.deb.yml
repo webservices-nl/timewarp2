@@ -1,0 +1,56 @@
+---
+
+- include_vars: "{{ansible_distribution}}.yml"
+
+- name: "add repository keys"
+  apt_key:
+    url: "{{item.url}}"
+    id: "{{item.key}}"
+    state: "present"
+  with_items: "{{ elasticsearch_apt_repo_keys}}"
+  tags: ["elasticsearch", "install"]
+
+- name: "add Elasticsearch repositories"
+  apt_repository:
+    repo: "{{item}}"
+    update_cache: yes
+  with_items: "{{ elasticsearch_apt_repos }}"
+  tags: ["elasticsearch", "install"]
+
+- name: "accept Oracle license"
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections; echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+         creates=/usr/lib/jvm/java-7-oracle
+  tags: ["elasticsearch", "install"]
+
+- name: "install Java JDK"
+  apt:
+    pkg: "{{elasticsearch_apt_java_package}}"
+  tags: ["elasticsearch", "nstall"]
+
+- name: "check if Elasticsearch is already installed"
+  stat:
+    path: "{{elasticsearch_home}}/lib/elasticsearch-{{elasticsearch_version}}.jar"
+  register: es_version_exists
+  tags: ["elasticsearch", "install"]
+
+- name: "download deb"
+  get_url:
+    url: "{{elasticsearch_download_url}}/elasticsearch-{{elasticsearch_version}}.deb"
+    dest: "/tmp/elasticsearch-{{elasticsearch_version}}.deb"
+    mode: "0440"
+    timeout: 60
+  when: not es_version_exists.stat.exists
+  tags: ["elasticsearch", "elasticsearch-install"]
+
+- name: "install Elasticsearch"
+  apt:
+    deb: "/tmp/elasticsearch-{{elasticsearch_version}}.deb"
+    dpkg_options: "force-confnew"
+  when: not es_version_exists.stat.exists
+  tags: ["elasticsearch", "install"]
+
+- name: "setup passlib"
+  apt:
+    pkg: "python-passlib"
+  when: elasticsearch_proxy_auth
+  tags: ["elasticsearch", "install"]

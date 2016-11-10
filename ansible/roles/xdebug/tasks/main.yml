@@ -1,0 +1,12 @@
+---
+# php5 and php7 have different xdebug versions in Ubuntu: See 'apt-cache search xdebug'
+- name: "install xdebug"
+  become: yes
+  apt:
+    pkg: "{{xdebug_package_name}}"
+    state: "latest"
+  when: "{{ php.install is defined and php.install and xdebug.install is defined and xdebug.install }}"
+
+- include: configure.yml
+  when: "{{ php.install is defined and php.install and xdebug.install is defined and xdebug.install }}"
+  tags: [xdebug, configure]

@@ -1,0 +1,7 @@
+---
+- name: "restart php-fpm"
+  service:
+    name: "{{ php_config['php-fpm'] }}"
+    enabled: yes
+    state: "restarted"
+  tags: ["php", "restart-php"]

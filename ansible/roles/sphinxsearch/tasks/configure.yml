@@ -1,0 +1,29 @@
+---
+
+#- debug: var=sphinxsearch_common_vars
+#- debug: var=sphinxsearch_sources_vars
+#- debug: var=sphinxsearch_indexes_vars
+#- debug: var=sphinxsearch_indexer_vars
+#- debug: var=sphinxsearch_searchd_vars
+
+- name: "Check if dirs are present and writable"
+  file:
+    path: item
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+    state: "directory"
+  with_items:
+    - "{{ sphinx_config_dir }}"
+    - "{{ sphinx_log_dir }}"
+
+- name: "create configuration file"
+  template:
+    src: "sphinx.conf.jn2"
+    dest: "{{ sphinx_config_dir }}/sphinx.conf"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  notify:
+    - "rotate all indexes"
+    - "restart sphinx"

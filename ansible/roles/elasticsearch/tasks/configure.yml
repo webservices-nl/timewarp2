@@ -1,0 +1,96 @@
+---
+- group: name={{elasticsearch_group}}
+
+- name: "ensure Elasticsearch user and group exists"
+  user:
+    name: "{{elasticsearch_user}}"
+    group: "{{elasticsearch_group}}"
+    createhome: no
+    system: yes
+  tags: ["elasticsearch-configure"]
+
+- name: "Chown Elasticsearch home"
+  file:
+    path: "{{elasticsearch_home}}"
+    state: "directory"
+    owner: "{{elasticsearch_user}}"
+    group: "{{elasticsearch_group}}"
+    recurse: yes
+  tags: ["elasticsearch-configure"]
+
+- name: "Configure Elasticsearch pt. 1"
+  template:
+    src: "elasticsearch.yml.j2"
+    dest: "{{ elasticsearch_confdir}}/elasticsearch.yml }}"
+    owner: "{{ elasticsearch_user }}"
+    group: "{{ elasticsearch_group }}"
+    mode: "0644"
+  notify: elasticsearch restart
+  tags: ["elasticsearch-configure"]
+
+- name: "Configure Elasticsearch pt. 2"
+  template:
+    src: "elasticsearch.j2"
+    dest: "/etc/default/elasticsearch"
+  notify: elasticsearch restart
+  tags: ["elasticsearch-configure"]
+
+- name: "Set limits.conf pt. 1"
+  lineinfile:
+    dest: "/etc/security/limits.conf"
+    regexp: "^{{ elasticsearch_user }}     -    nofile    {{ elasticsearch_max_open_files }}"
+    insertafter: "EOF"
+    line: "{{ elasticsearch_user }}     -    nofile    {{ elasticsearch_max_open_files }}"
+  when: elasticsearch_max_open_files is defined
+  tags: ["elasticsearch-configure"]
+
+- name: "Set limits.conf pt. 2"
+  lineinfile:
+    dest: "/etc/security/limits.conf"
+    regexp: "^{{elasticsearch_user}}     -    memlock   {{elasticsearch_max_locked_memory}}"
+    insertafter: "EOF"
+    line: "{{ elasticsearch_user }}     -    memlock   {{ elasticsearch_max_locked_memory }}"
+  when: elasticsearch_max_locked_memory is defined
+  tags: ["elasticsearch-configure"]
+
+- name: "configure /etc/pam.d/su"
+  lineinfile:
+    dest: "/etc/pam.d/su"
+    regexp: "^session    required   pam_limits.so"
+    insertafter: "EOF"
+    line: "session    required   pam_limits.so"
+  tags: ["elasticsearch-configure"]
+
+- name: "configure /etc/pam.d/common-session"
+  lineinfile:
+    dest: "/etc/pam.d/common-session"
+    regexp: "^session    required   pam_limits.so"
+    insertafter: "EOF"
+    line: "session    required   pam_limits.so"
+  when: ansible_os_family == 'Debian'
+  tags: ["elasticsearch-configure"]
+
+- name: "configure /etc/pam.d/common-session-noninteractive"
+  lineinfile:
+    dest: "/etc/pam.d/common-session-noninteractive"
+    regexp: "^session    required   pam_limits.so"
+    insertafter: "EOF"
+    line: "session    required   pam_limits.so"
+  when: ansible_os_family == 'Debian'
+  tags: ["elasticsearch-configure"]
+
+- name: "set pam limits.so"
+  lineinfile:
+    dest: "/etc/pam.d/sudo"
+    regexp: "'^session    required   pam_limits.so"
+    insertafter: "EOF"
+    line: "session    required   pam_limits.so"
+  tags: ["elasticsearch-configure"]
+
+- name: "Set pam limits.so"
+  lineinfile:
+    dest: "/etc/init.d/elasticsearch"
+    regexp: '^(DAEMON_OPTS=".*-Des.max-open-files=true")$'
+    insertbefore: '^(DAEMON_OPTS=".*CONF_DIR")$'
+    line: 'DAEMON_OPTS="$DAEMON_OPTS -Des.max-open-files=true"'
+  tags: ["elasticsearch-configure"]

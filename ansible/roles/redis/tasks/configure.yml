@@ -1,0 +1,7 @@
+---
+
+- name: "Ensure redis is started"
+  service:
+    name: "redis"
+    state: "started"
+  tags: ["redis-configuration", "enable-service"]

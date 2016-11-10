@@ -1,0 +1,35 @@
+# Install Adminer from scratch. As Apache2 is not used (prerequiste for Debian family)
+- name: "ensure Adminer directories exists"
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: "{{ www_user }}"
+    group: "{{ www_user }}"
+  with_items:
+    - "{{ adminer_install_dir }}"
+  tags: ["maria-db", "pre-requisites"]
+
+- name: "download Adminer to configured directory"
+  get_url:
+    url: "http://www.adminer.org/latest.php"
+    dest: "{{ adminer_install_dir }}/{{ adminer_install_filename }}"
+    mode: 0644
+  tags: ["maria-db", "adminer"]
+
+- name: "add nginx serverblock for adminer (adminer.conf)"
+  template:
+    src: "nginx.conf.j2"
+    dest: "/etc/nginx/sites-available/adminer.conf"
+  when: adminer_add_nginx_config and ansible_os_family == 'Debian'
+  notify: "restart nginx"
+  tags: ["maria-db", "adminer","nginx"]
+
+- name: "symlink nginx server block"
+  when:
+  file:
+    src: "/etc/nginx/sites-available/adminer.conf"
+    dest: "/etc/nginx/sites-enabled/adminer.conf"
+    state: "link"
+    validate: "nginx -t -c %s"
+  tags: ["maria-db", "adminer","nginx"]

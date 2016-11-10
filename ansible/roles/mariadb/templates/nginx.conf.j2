@@ -1,0 +1,28 @@
+server {
+
+     listen   80;
+     server_name db.{{nginx_servername|default('ws.dev')}};
+     root        {{ adminer_install_dir }};
+
+     access_log /var/log/nginx/adminer_access.log;
+     error_log /var/log/nginx/adminer_error.log;
+
+     # Increase the upload size to 2000M.
+     client_max_body_size 2000M;
+
+     index {{ adminer_install_filename }};
+
+     location / {
+        try_files $uri $uri/ =404;
+     }
+
+     location ~ \.php {
+         fastcgi_pass {{ unix_sock }};
+         fastcgi_index /{{ adminer_install_filename }};
+         include fastcgi_params;
+         fastcgi_split_path_info       ^(.+\.php)(/.+)$;
+         fastcgi_param PATH_INFO       $fastcgi_path_info;
+         fastcgi_param PATH_TRANSLATED $document_root$fastcgi_path_info;
+         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+     }
+}

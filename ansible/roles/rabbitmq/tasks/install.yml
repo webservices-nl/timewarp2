@@ -1,0 +1,30 @@
+---
+
+- name: "add rabbitmq official apt repository"
+  apt_repository:
+    repo: "deb http://www.rabbitmq.com/debian/ testing main"
+    state: "present"
+  tags: ["rabbitmq", "install"]
+
+- name: "add the verification key for the package"
+  become: yes
+  apt_key:
+    url: "http://www.rabbitmq.com/rabbitmq-signing-key-public.asc"
+    state: "present"
+  tags: ["rabbitmq", "repo"]
+
+- name: "update rabbitMQ repositories"
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+  tags: ["rabbitmq", "repo"]
+
+- name: "install rabbitmq dependencies"
+  apt:
+    pkg: "{{ item }}"
+    state: "latest"
+    force: yes
+  with_items:
+    - "librabbitmq-dev"
+    - "rabbitmq-server"
+  tags: ["rabbitmq", "install package"]

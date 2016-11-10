@@ -1,0 +1,32 @@
+---
+- name: "set the host name"
+  hostname:
+    name: "{{ vagrant_local.vm.hostname }}"
+  when: "{{ vagrant_local.vm.hostname }} is defined"
+  tags: ["hostname"]
+
+- name: "set /etc/hostname"
+  copy:
+    content: "{{vagrant_local.vm.hostname}}{{'\n'}}"
+    dest: "/etc/hostname"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  when: "{{ vagrant_local.vm.hostname }} is defined"
+  tags: ["hostname", "/etc/hostname"]
+
+- name: "update the IPv4 hostname"
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: "^127.0.0.1"
+    line: "127.0.0.1{{'\t'}}{{inventory_hostname}}{% if inventory_hostname != vagrant_local.vm.hostname %}{{'\t'}}{{vagrant_local.vm.hostname}}{% endif %}{{'\t'}}localhost"
+    state: "present"
+  tags: ["hostname", "/etc/hosts", "ip4"]
+
+- name: "update the IPv6 hostname"
+  lineinfile:
+    dest: "/etc/hosts"
+    regexp: "^::1"
+    line: "::1{{'\t\t'}}{{inventory_hostname}}{% if inventory_hostname != vagrant_local.vm.hostname %}{{'\t'}}{{vagrant_local.vm.hostname}}{% endif %}{{'\t'}}localhost ip6-localhost ip6-loopback"
+    state: "present"
+  tags: ["hostname", '/etc/hosts', "ip6"]

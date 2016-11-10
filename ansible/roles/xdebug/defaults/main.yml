@@ -1,0 +1,18 @@
+---
+php_module_prefix: "{% if php_major_version >= 7 %}php{% else %}php5{% endif %}"
+xdebug_package_name: "{% if php_major_version == 5 %}php5-xdebug{% else %}php-xdebug{% endif %}"
+
+settings:
+  xdebug_cli_enable: 1
+  xdebug_coverage_enable: 1
+  xdebug_default_enable: 1
+  xdebug_idekey: 'PHPSTORM'
+  xdebug_max_nesting_level: 256
+  xdebug_overload_var_dump: 2
+  xdebug_profiler_enable: "0"
+  xdebug_profiler_enable_trigger: 1
+  xdebug_remote_autostart: "0"
+  xdebug_remote_connect_back: "0"
+  xdebug_remote_enable: 1
+  xdebug_remote_log: /tmp/xdebug.log
+  xdebug_remote_port: 9000

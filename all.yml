@@ -1,0 +1,140 @@
+---
+server:
+  install: yes
+  packages: [git, vim, htop, iotop, nano, zip, unzip]
+  timezone: "Europe/Amsterdam"
+  locale: en_GB.UTF-8
+  swap: yes
+
+vagrant_local:
+  install: yes
+  vm: { base_os: "ubuntu", base_box: "trusty64", hostname: "timewarp.dev", private_ip: "192.168.44.101", public_ip: '', memory: '512', cpus: "1" , sharedfolder: ./, useVagrantCloud: '1', syncType: '0' }
+
+nginx:
+  install: yes
+  docroot: /var/www/html
+
+mailhog:
+  install: yes
+  ssmtp_install: true # also install ssmtp server?
+  port: 25
+
+mariadb:
+  install: no
+  root_password: root
+  database: wsdev
+  user: user
+  password: bla
+  dump: ''
+  adminer: yes
+
+redis:
+  install: yes
+  port: '6379'
+
+rabbitmq:
+  install: no
+  users:
+    - name: "root"
+      password: "bla"
+      administrator: yes
+    - name: "otheruser"
+      password: "lalala"
+      administrator: no
+  plugins:
+    - name: "rabbitmq_management_visualiser"
+    - name: "rabbitmq_management_agent"
+    - name: "rabbitmq_management"
+
+elasticsearch:
+  install: no
+  version: 2.1.1
+  port: '9200'
+  plugins:
+    - name: mobz/elasticsearch-head
+      url: https://github.com/mobz/elasticsearch-head/archive/master.zip
+      #remove: yes
+    - name: lmenezes/elasticsearch-kopf
+  proxy_enabled: yes
+
+sphinxsearch:
+  install: no
+  sources: []
+#    - source:
+#        name: "main_source"
+#        type: "mysql"
+#        sql_host: "localhost"
+#        sql_db: "wsdev"
+#        sql_user: "root"
+#        sql_pass: "root"
+#        sql_port: "3306"
+#        sql_query_pre: "SET CHARACTER_SET_RESULTS=latin1"
+#        sql_query: "SELECT id, group_id, UNIX_TIMESTAMP(date_added) AS date_added, title, content FROM documents"
+  indexes: []
+#    - index:
+#        name: "test_index"
+#        source: "main_source"
+  indexer: {}
+#     mem_limit: "64M"
+  searchd: {}
+#    client_timeout: 400
+  common: {}
+
+php:
+  install: no
+  version: 7.0
+  extra_packages: [memcached]
+  modules:
+    - php-cli
+    - php-curl
+    - php-intl
+    - php-mcrypt
+    - php-common
+    - php-mysql
+    - php-gd
+    - php-xml
+    - php-soap
+  pecl_packages: []
+
+xdebug:
+  install: no
+  settings:
+    xdebug_idekey: "PHPSTORM"
+#    xdebug_color_cli: "2"
+#    xdebug_cli_enable: "1"
+#      xdebug_coverage_enable: "1"
+#      xdebug_default_enable: "1"
+#      xdebug_max_nesting_level: 300
+#      xdebug_profiler_enable_trigger: "1"
+#      xdebug_remote_connect_back: "1"
+#      xdebug_remote_enable: "1"
+#      xdebug_remote_autostart: "0"
+#      xdebug_remote_host: "192.168.77.1"
+#      xdebug_remote_port: "9000"
+#      xdebug_remote_log: "/tmp/xdebug.log"
+
+sqlite:
+  install: no
+  install_dir: "/var/lib/sql"
+  dbs: []
+
+composer:
+  install: yes
+  packages:
+    - name: "squizlabs/php_codesniffer"
+    - name: "phpunit/phpunit"
+    - name: "fabpot/php-cs-fixer"
+    - name: "phpmd/phpmd"
+    - name: "pdepend/pdepend"
+
+npm:
+  install: yes
+  update: yes
+  packages:
+    - name: "bower"
+    - name: "gulp"
+      #version: "3"
+      #state: present|absent
+    - name: "grunt-cli"
+
+app: []

@@ -1,0 +1,16 @@
+description "MailHog"
+author "Gerben Geijteman | DevOps FD Mediagroep"
+
+# Set startup parameters
+start on (net-device-up IFACE=eth0)
+stop on runlevel [!2345]
+
+# Respawn the process if it crashes
+respawn
+respawn limit 10 10
+
+# Actual script
+script
+	exec /opt/mailhog/mailhog -smtp-bind-addr {{ mailhog_bind_ip }}:{{ mailhog_bind_port }} -hostname {{ mailhog_hostname | default(ansible_nodename) }}
+end script
+

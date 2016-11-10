@@ -1,0 +1,66 @@
+---
+
+# make sure all is installed
+- include: "install.yml"
+  tags: ["mariadb", "install"]
+
+# (re)set the root password
+- name: "Update root password for all root accounts"
+  mysql_user:
+    name: "root"
+    host: "{{ item }}"
+    check_implicit_admin: yes
+    password: "{{ mariadb.root_password }}"
+    login_user: "root"
+    login_password: "{{ mariadb.root_password }}"
+  with_items:
+    - "{{ current_hostname.stdout | lower }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+  tags: ["mariadb", "credentials"]
+
+- name: "ensure anonymous users are not in the database"
+  mysql_user:
+    name: ''
+    host: "{{ item }}"
+    state: "absent"
+    login_user: "root"
+    login_password: "{{ mariadb.root_password }}"
+  with_items:
+    - localhost
+    - "{{ current_hostname.stdout | lower }}"
+  tags: ["mariadb", "credentials"]
+
+- name: "create databases"
+  mysql_db:
+    name: "{{ mariadb.database }}"
+    state: "present"
+    login_user: "root"
+    login_password: "{{ mariadb.root_password }}"
+  tags: ["mariadb", "create-databases"]
+
+- name: "import dump"
+  mysql_db:
+    name: "{{ mariadb.database }}"
+    state: "import"
+    login_user: "root"
+    login_password: "{{ mariadb.root_password }}"
+    target: "/vagrant/{{ mariadb.dump }}"
+  when: mariadb.dump is defined and mariadb.dump
+  tags: ["mariadb", "import-dumb"]
+
+- name: "create users"
+  mysql_user:
+    name: "{{ mariadb.user }}"
+    password: "{{ mariadb.password }}"
+    priv: "{{ mariadb.database }}.*:ALL"
+    state: "present"
+    login_user: "root"
+    login_password: "{{ mariadb.root_password }}"
+  tags: ["mariadb", "create-users"]
+
+- name: "install Adminer"
+  when: mariadb.adminer is defined and mariadb.adminer
+  include: "adminer.yml"
+  tags: ["mariadb", "adminer"]

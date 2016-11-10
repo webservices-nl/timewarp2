@@ -1,71 +1,89 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby :
+require 'yaml'
+dir = File.dirname(File.expand_path(__FILE__))
+configValues = YAML.load_file("all.yml")
+data = configValues['vagrant_local']
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+vagrant_home = (ENV['VAGRANT_HOME'].to_s.split.join.length > 0) ? ENV['VAGRANT_HOME'] : "#{ENV['HOME']}/.vagrant.d"
+vagrant_dot  = (ENV['VAGRANT_DOTFILE_PATH'].to_s.split.join.length > 0) ? ENV['VAGRANT_DOTFILE_PATH'] : "#{dir}/.vagrant"
+
+#If your Vagrant version is lower than 1.5, you can still use this provisioning
+#by commenting or removing the line below and providing the config.vm.box_url parameter,
+#if it's not already defined in this Vagrantfile. Keep in mind that you won't be able
+#to use the Vagrant Cloud and other newer Vagrant features.
+Vagrant.require_version ">= 1.5"
+
+# Check to determine whether we're on a windows or linux/os-x host,
+# later on we use this to launch ansible in the supported way
+# source: https://stackoverflow.com/questions/2108727/which-in-ruby-checking-if-program-exists-in-path-from-ruby
+def which(cmd)
+    exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+    ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+        exts.each { |ext|
+            exe = File.join(path, "#{cmd}#{ext}")
+            return exe if File.executable? exe
+        }
+    end
+    return nil
+end
+
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://atlas.hashicorp.com/search.
-  config.vm.box = "ubuntu/trusty64"
+    config.ssh.forward_agent = true
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
+    config.vm.box = "#{data['vm']['base_os']}/#{data['vm']['base_box']}"
+    config.vm.hostname = "#{data['vm']['hostname']}"
+    config.vm.synced_folder "../", "/vagrant"
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+    # set network options
+    config.vm.network :private_network, ip: "#{data['vm']['private_ip']}"
+    config.vm.network "forwarded_port", guest: 1113, host: 1113
+    config.vm.network "forwarded_port", guest: 2113, host: 2113
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+    # hostmanager manages the hostfile on client and host
+    config.hostmanager.enabled           = true
+    config.hostmanager.manage_host       = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline   = true
+    config.hostmanager.aliases = "es.#{data['vm']['hostname']} db.#{data['vm']['hostname']}" #sub-domains
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+    if data['vm']['public_ip'].to_s != ''
+        config.vm.network 'public_network'
+        if data['vm']['public_ip'].to_s != '1'
+          config.vm.network 'public_network', ip: "#{data['vm']['public_ip']}"
+        end
+    end
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
+    # virtualbox specifics
+    config.vm.provider :virtualbox do |v|
+        v.name = "#{data['vm']['hostname']}"
+        v.customize [
+            "modifyvm", :id,
+            "--name", v.name,
+            "--memory", 1024,
+            "--natdnshostresolver1", "on",
+            "--cpus", 1,
+        ]
+        v.customize ['setextradata', :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//vagrant", '1']
+    end
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
+    # If Ansible is in your path it will provision from your HOST machine
+    # If Ansible is not found in the path it will be installed in the VM and provisioned from there
+    if which('ansible-playbook')
+        config.vm.provision "ansible" do |ansible|
+            ansible.verbose = "v"
+            ansible.playbook = "ansible/playbook.yml"
+            ansible.inventory_path = "ansible/inventories/dev"
+            ansible.limit = 'all'
+        end
+        #config.vm.provision "shell", path: "https://packagecloud.io/install/repositories/EventStore/EventStore-OSS/script.deb.sh"
 
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
+        config.vm.provision "docker" do |docker|
+            # docker provision
+            docker.run "humblelistener/eventstore",
+                args: "-p 2113:2113 -p 1113:1113"
+        end
+    else
+        config.vm.provision :shell, path: "ansible/windows.sh", args: ["#{data['vm']['hostname']}"]
+    end
 end

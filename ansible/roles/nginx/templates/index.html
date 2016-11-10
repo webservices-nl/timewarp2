@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ vagrant_local.vm.hostname }}</title>
+</head>
+<body>
+<h1>{{ vagrant_local.vm.hostname }}</h1>
+<p>Welcome to your Webservices devMachine default page.</p>
+<ul>
+    <li><a href="/info.php" title="PHP info">php info</a></li>
+    <li><a href="http://es.{{ vagrant_local.vm.hostname }}/_plugin/head/" title="Elastic search GUI">Elastic search GUI</a></li>
+    <li><a href="http://es.{{ vagrant_local.vm.hostname }}" title="Elastic search">Elastic search</a></li>
+    <li><a href="//{{ vagrant_local.vm.hostname }}:15672" title="RabbitMQ">RabbitMQ</a></li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,20 @@
+---
+#- debug: msg="{{ ssmtp_install }}"
+
+- name: "install ssmtp and mailutil package"
+  apt:
+    name: "{{ item }}"
+    state: installed
+    update_cache: yes
+  with_items:
+    - ssmtp
+    - mailutils
+  ignore_errors: yes
+
+- name: "ensure config is set"
+  template:
+    src: ssmtp.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+  when:
+    - mailhog.ssmtp_install is defined and mailhog.ssmtp_install == true
+

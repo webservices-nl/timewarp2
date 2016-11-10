@@ -1,0 +1,37 @@
+- name: "Add OS specific variables"
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "Install RedHat sqlite package"
+  yum: name={{ item }} state=installed
+  with_items: "{{sqlite_pkg}}"
+  when: ansible_os_family == 'RedHat'
+
+- name: "Install Debian sqlite package"
+  apt: name={{ item }} state=installed update_cache=yes
+  with_items: "{{ sqlite_pkg }}"
+  when: ansible_os_family == 'Debian'
+
+- name: "Install PHP Sqlite module"
+  become: yes
+  apt:
+    pkg: "{{ 'php-sqlite3'|regex_replace('php', php_config['php-module-prefix']) }}"
+    state: "latest"
+  when: php.install is defined and php.install
+
+# Dir should be writeable for all for saving file
+- name: "Create sqlite directory"
+  file:
+    path: "{{ sqlite.install_dir }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0777"
+    state: directory
+
+- name: "Create sqlite database files"
+  file:
+    path: "{{ sqlite.install_dir }}/{{ item }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+    state: touch
+  with_items: "{{ sqlite.dbs }}"
