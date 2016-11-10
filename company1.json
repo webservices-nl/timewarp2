@@ -1,0 +1,131 @@
+[
+    {
+        "eventId": "aa5f9e28-32f3-43f2-b019-40c51ecec9df",
+        "eventType": "new_establishment",
+        "date_time": "2010-03-01",
+        "data": {
+            "company_name": "Brilliant Future B.V.",
+            "activity": "Software"
+        }
+    },
+    {
+        "eventId": "8c055aa9-d24f-4b03-b75d-6e92e59c2e0a",
+        "eventType": "relocation",
+        "date_time": "2010-12-01",
+        "data": {
+            "address": "Rembrandtlaan 6, Amsterdam NL",
+            "square_meters": 500
+        }
+    },
+    {
+        "eventId": "538f56ea-63ae-459a-9bde-c910d32be2f4",
+        "eventType": "employee",
+        "date_time": "2010-12-15",
+        "data": {
+            "amount": 50
+        }
+    },
+    {
+        "eventId": "7400df9f-9de5-467a-b053-42c567901340",
+        "eventType": "new_position",
+        "date_time": "2012-01-15",
+        "data": {
+            "person": "David Watts",
+            "position": "CEO",
+            "previous_person": "Ronald Wired"
+        }
+    },
+    {
+        "eventId": "e93e6a0d-b925-4a5e-9836-503bbd2a9d3b",
+        "eventType": "employee",
+        "date_time": "2012-12-15",
+        "data": {
+            "amount": 70
+        }
+    },
+    {
+        "eventId": "2b2cbd50-4636-4270-9f09-aff567db993f",
+        "eventType": "profit",
+        "date_time": "2013-01-15",
+        "data": {
+            "profit": "\u20ac 100 000,00"
+        }
+    },
+    {
+        "eventId": "3a59b9e5-3ab7-48da-9857-061c194363c8",
+        "eventType": "take_over",
+        "date_time": "2013-01-15",
+        "data": {
+            "company_name": "Poison BV"
+        }
+    },
+    {
+        "eventId": "b16b4e34-b149-4287-96c1-74bb09e814cc",
+        "eventType": "employee",
+        "date_time": "2013-12-15",
+        "data": {
+            "amount": 170
+        }
+    },
+    {
+        "eventId": "899d6961-0990-4ff7-80e7-5c2c9c8d688c",
+        "eventType": "relocation",
+        "date_time": "2014-12-01",
+        "data": {
+            "address": "Beethovenlaan 80, Amsterdam NL",
+            "square_meters": 1500
+        }
+    },
+    {
+        "eventId": "25587131-abd8-475d-ab70-18da6913fbfe",
+        "eventType": "profit",
+        "date_time": "2015-01-15",
+        "data": {
+            "profit": "\u20ac 500 000,00"
+        }
+    },
+    {
+        "eventId": "1fe76d79-9550-4ba5-99a0-c89465a91efa",
+        "eventType": "new_position",
+        "date_time": "2015-01-30",
+        "data": {
+            "person": "Freddie Crooner",
+            "position": "CEO",
+            "previous_person": "David Watts"
+        }
+    },
+    {
+        "eventId": "0303032d-6091-4f20-b135-615539beeb22",
+        "eventType": "profit",
+        "date_time": "2015-02-15",
+        "data": {
+            "profit": "\u20ac 400 000,00"
+        }
+    },
+    {
+        "eventId": "dbad42e5-5982-4e8a-bf97-5b6eef4144f3",
+        "eventType": "new_position",
+        "date_time": "2015-04-15",
+        "data": {
+            "person": "Johnny Cool",
+            "position": "CEO",
+            "previous_person": "Freddie Crooner"
+        }
+    },
+    {
+        "eventId": "3da898c3-2680-44cc-bada-de0ad9ad85ff",
+        "eventType": "profit",
+        "date_time": "2015-04-20",
+        "data": {
+            "profit": "\u20ac 5 000,00-"
+        }
+    },
+    {
+        "eventId": "401700bb-99ca-4416-b2f7-90772222e0ad",
+        "eventType": "acquired_by",
+        "date_time": "2015-05-15",
+        "data": {
+            "company_name": "FuzzyLogic B.V."
+        }
+    }
+]
