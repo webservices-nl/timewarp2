@@ -8,26 +8,37 @@
  */
 
 import React from 'react';
+import FontAwesome from 'react-fontawesome';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Header.css';
 import Link from '../Link';
 import Navigation from '../Navigation';
-import logoUrl from './logo-small.png';
+import logoUrl from './fd-logo.png';
 
 function Header() {
   return (
     <div className={s.root}>
-      <div className={s.container}>
-        <Navigation className={s.nav} />
-        <Link className={s.brand} to="/">
-          <img src={logoUrl} width="38" height="38" alt="React" />
-          <span className={s.brandTxt}>Your Company</span>
-        </Link>
-        <div className={s.banner}>
-          <h1 className={s.bannerTitle}>React</h1>
-          <p className={s.bannerDesc}>Complex web apps made easy</p>
+      <section className={s.side}>
+        <h1 className={s.title}>FD Media</h1>
+        <img className={s.logo} src={logoUrl} />
+      </section>
+      <section className={s.side}>
+        <div className={s.employees}>
+          <FontAwesome name='user'/>
+          <span className={s.value}>10</span>
         </div>
-      </div>
+        <div className={s.profit}>
+          <FontAwesome name='usd'/>
+          <span className={s.value}>10000</span>
+        </div>
+        <div className={s.address}>
+          <FontAwesome name='address-card' className={s.addressitem}/>
+          <ul className={s.addressitem}>
+            <li>Prins Bernhardplein 173</li>
+            <li>1097 BL AMSTERDAM</li>
+          </ul>
+        </div>
+      </section>
     </div>
   );
 }

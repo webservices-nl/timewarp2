@@ -39,6 +39,9 @@ Vagrant.configure("2") do |config|
     config.vm.network :private_network, ip: "#{data['vm']['private_ip']}"
     config.vm.network "forwarded_port", guest: 1113, host: 1113
     config.vm.network "forwarded_port", guest: 2113, host: 2113
+    config.vm.network "forwarded_port", guest: 3000, host: 3000
+    config.vm.network "forwarded_port", guest: 3001, host: 3001
+    config.vm.network "forwarded_port", guest: 3002, host: 3002
 
     # hostmanager manages the hostfile on client and host
     config.hostmanager.enabled           = true
