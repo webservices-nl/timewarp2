@@ -1,0 +1,94 @@
+[
+    {
+        "eventId": "48329a7f-b935-4ed8-bb08-11bd74d126a8",
+        "eventType": "new_establishment",
+        "date_time": "2010-03-01",
+        "data": {
+            "company_name": "FuzzyLogic B.V.",
+            "activity": "Software"
+        }
+    },
+    {
+        "eventId": "163454fb-6079-4a0d-8615-6a2c1fa28446",
+        "eventType": "relocation",
+        "date_time": "2010-12-01",
+        "data": {
+            "address": "Sesamestraat 22, Utrecht NL",
+            "square_meters": 50
+        }
+    },
+    {
+        "eventId": "fdf6577d-bd59-4650-b367-41be89e0dcf8",
+        "eventType": "employee",
+        "date_time": "2010-12-15",
+        "data": {
+            "amount": 10
+        }
+    },
+    {
+        "eventId": "302fd782-e9ce-45e7-bf94-35cd0a9b3122",
+        "eventType": "profit",
+        "date_time": "2011-01-15",
+        "data": {
+            "profit": "\u20ac 5 000,00-"
+        }
+    },
+    {
+        "eventId": "49e19c97-1c88-4d19-961e-835d0ae6afd4",
+        "eventType": "employee",
+        "date_time": "2011-06-15",
+        "data": {
+            "amount": 20
+        }
+    },
+    {
+        "eventId": "1c7f0749-df09-4d6b-a198-83efc8d5b78c",
+        "eventType": "acquired_by",
+        "date_time": "2012-08-15",
+        "data": {
+            "company_name": "MicroLogic B.V."
+        }
+    },
+    {
+        "eventId": "d9dcbf45-db74-44ee-bdba-0e4874de82c9",
+        "eventType": "new_position",
+        "date_time": "2012-09-15",
+        "data": {
+            "person": "Walter Spark",
+            "position": "CEO"
+        }
+    },
+    {
+        "eventId": "8cccf582-b580-4f98-86a3-18f2254ffbd5",
+        "eventType": "relocation",
+        "date_time": "2012-12-01",
+        "data": {
+            "address": "Donald Duck 22, Amsterdam NL",
+            "square_meters": 150
+        }
+    },
+    {
+        "eventId": "b0788114-646c-408f-b86f-ce38cccfda23",
+        "eventType": "employee",
+        "date_time": "2012-12-15",
+        "data": {
+            "amount": 70
+        }
+    },
+    {
+        "eventId": "8ac71ab6-aa52-47d8-a08a-b52475bcf6b4",
+        "eventType": "profit",
+        "date_time": "2012-01-15",
+        "data": {
+            "profit": "\u20ac 1 000 000,00"
+        }
+    },
+    {
+        "eventId": "f195c8b2-5959-4503-a5ae-6a85ab752b15",
+        "eventType": "take_over",
+        "date_time": "2015-05-15",
+        "data": {
+            "company_name": "Brilliant Future B.V."
+        }
+    }
+]
