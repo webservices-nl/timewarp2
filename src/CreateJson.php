@@ -9,7 +9,6 @@ use TestCode\Event as Event;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$serializer = \JMS\Serializer\SerializerBuilder::create()->build();
 AnnotationRegistry::registerLoader('class_exists');
 
 $scenario1 = [
